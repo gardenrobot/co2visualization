@@ -1,0 +1,6 @@
+flask~=2.2.3
+chartkick~=1.0.1
+celery~=5.2.7
+redis~=2.2.3
+flask-celeryext~=0.5.0
+co2meter~=0.2.6

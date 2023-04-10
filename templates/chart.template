@@ -1,0 +1,4 @@
+<script src="{{ url_for('chartkick.static', filename='Chart.bundle.js') }}"></script>
+<script src="{{ url_for('chartkick.static', filename='chartkick.js') }}"></script>
+
+{{ chart }}

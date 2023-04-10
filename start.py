@@ -1,0 +1,66 @@
+import datetime
+import os
+
+from chartkick.flask import chartkick_blueprint
+from chartkick.flask import PieChart
+
+from flask import Flask, render_template
+
+from flask_celeryext import FlaskCeleryExt
+
+from celery import Celery, Task
+
+import co2meter as co2
+
+
+READ_INTERVAL = 300.0 # 5 minutes
+DATA_DIR = "data/"
+
+app = Flask('testapp')
+app.config.update(dict(
+    CELERY_ALWAYS_EAGER=True,
+    CELERY_RESULT_BACKEND='cache',
+    CELERY_CACHE_BACKEND='memory',
+    CELERY_EAGER_PROPAGATES=True),
+    CELERY_BROKER_URL="redis://localhost",
+)
+app.register_blueprint(chartkick_blueprint)
+ext = FlaskCeleryExt()
+ext.init_app(app)
+celery = ext.celery
+
+@celery.task()
+def sensorread():
+    """Get sensor data and log it to a file associated with the current date"""
+    data = list(co2.CO2monitor().read_data())
+    for i in range(len(data)):
+        data[i] = str(data[i])
+    # TODO encode this csv properly
+    print(data)
+    data_str = ",".join(data)
+    
+    today = datetime.datetime.now().strftime('%Y-%m-%d')
+    filepath = os.path.join(DATA_DIR, today) + ".csv"
+
+    # write header
+    if not os.path.isfile(filepath) or os.path.getsize(filepath) == 0:
+        with open(filepath, "w") as f:
+            f.write("datetime,co2,temp\n")
+    with open(filepath, "a") as f:
+        f.write(str(data_str) + "\n")
+
+@celery.on_after_configure.connect
+def setup_periodic_tasks(sender, **kwargs):
+    sender.add_periodic_task(READ_INTERVAL, sensorread)
+
+celery.conf.beat_schedule = {
+    'sensorread': {
+        'task': 'sensorread',
+        'schedule': READ_INTERVAL,
+    }
+}
+
+@app.route('/')
+def hello_world():
+    chart = PieChart({'Blueberry': 44, 'Strawberry': 23})
+    return render_template('chart.template', chart=chart)
