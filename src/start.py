@@ -5,7 +5,7 @@ import csv
 from chartkick.flask import chartkick_blueprint
 from chartkick.flask import PieChart, LineChart
 
-from flask import Flask, render_template
+from flask import Flask, render_template, Blueprint
 
 from flask_celeryext import FlaskCeleryExt
 
@@ -13,9 +13,15 @@ from celery import Celery, Task
 
 import co2meter as co2
 
+from common import write_header, round_to_5min, to_str, to_datetime
 
-READ_INTERVAL = 300.0 # 5 minutes
-DATA_DIR = "data/"
+from pprint import pprint
+
+
+# TODO change the read interval into a cron
+READ_INTERVAL = 10#300.0 # 5 minutes
+DATA_DIR = "../data/"
+CHART_TEMPLATE = "chart.template"
 
 app = Flask("testapp")
 app.config.update(dict(
@@ -25,14 +31,17 @@ app.config.update(dict(
     CELERY_EAGER_PROPAGATES=True),
     CELERY_BROKER_URL="redis://localhost",
 )
-app.register_blueprint(chartkick_blueprint)
+app.register_blueprint(chartkick_blueprint, template_folder='templates/')
 ext = FlaskCeleryExt()
 ext.init_app(app)
 celery = ext.celery
 
+
 @celery.task()
 def sensorread():
     """Get sensor data and log it to a file associated with the current date"""
+    print("sensorread()")
+
     #create data/ dir if it does not exist
     if not os.path.isdir(DATA_DIR):
         os.mkdir(DATA_DIR)
@@ -42,13 +51,18 @@ def sensorread():
     for i in range(len(data)):
         data[i] = str(data[i])
 
-    today = datetime.datetime.now().strftime("%Y-%m-%d")
+    today = data[0].split(" ")[0]
     filepath = os.path.join(DATA_DIR, today) + ".csv"
+
+    # round datetime down
+    data[0] = to_str(round_to_5min(to_datetime(data[0])))
+
+    # TODO do not write if datetime already exists in file
 
     # write csv header if it does not exist
     if not os.path.isfile(filepath) or os.path.getsize(filepath) == 0:
         with open(filepath, "w") as f:
-            f.write("datetime,co2,temp\n")
+            write_header(f)
 
     # write data
     with open(filepath, "a") as f:
@@ -69,13 +83,14 @@ celery.conf.beat_schedule = {
 @app.route("/test")
 def test():
     chart = PieChart({"Blueberry": 44, "Strawberry": 23})
-    return render_template("chart.template", chart=chart)
+    return render_template(CHART_TEMPLATE, chart=chart)
 
 @app.route("/")
 def linechart():
+    print(os.path.dirname(os.path.realpath(__file__)))
     data = read_csv(datetime.datetime.now())
     chart = LineChart(data, xtitle="Time", ytitle="CO2 in ppm")
-    return render_template("chart.template", chart=chart)
+    return render_template(CHART_TEMPLATE, chart=chart)
 
 def read_csv(date, existing_data={}):
     """
