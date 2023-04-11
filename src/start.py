@@ -17,6 +17,8 @@ from common import write_header, round_to_5min, to_str, to_datetime
 
 from pprint import pprint
 
+from typing import Dict
+
 
 # TODO change the read interval into a cron
 READ_INTERVAL = 10#300.0 # 5 minutes
@@ -38,7 +40,7 @@ celery = ext.celery
 
 
 @celery.task()
-def sensorread():
+def sensorread() -> None:
     """Get sensor data and log it to a file associated with the current date"""
     print("sensorread()")
 
@@ -92,7 +94,7 @@ def linechart():
     chart = LineChart(data, xtitle="Time", ytitle="CO2 in ppm")
     return render_template(CHART_TEMPLATE, chart=chart)
 
-def read_csv(date, existing_data={}):
+def read_csv(date: datetime, existing_data={}) -> Dict[str, int]:
     """
     Takes a date and returns data from that date. Data is appended to
     existing_data.

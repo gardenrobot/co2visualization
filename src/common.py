@@ -19,8 +19,5 @@ def round_to_5min(old_datetime: datetime) -> datetime:
         microsecond=0,
     )
 
-#def round_to_5min(datetime_str: str) -> str:
-#    return to_str(round_to_5min(to_datetime(datetime_str)))
-
 def write_header(f: TextIO) -> None:
     f.write("Datetime,Co2(PPM),Temp\n")
