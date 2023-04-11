@@ -3,6 +3,8 @@ from datetime import datetime
 from typing import TextIO
 
 
+DATA_DIR = "../data/"
+
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 

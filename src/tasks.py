@@ -1,0 +1,41 @@
+from celery import Celery, Task
+from flaskapp import celery
+from common import DATA_DIR, to_str, to_datetime, round_to_5min
+
+import co2meter
+
+import os
+import csv
+
+
+@celery.task()
+def sensorread() -> None:
+    """Get sensor data and log it to a file associated with the current date"""
+    print("sensorread()")
+
+    #create data/ dir if it does not exist
+    if not os.path.isdir(DATA_DIR):
+        os.mkdir(DATA_DIR)
+
+    # Get data
+    data = list(co2meter.CO2monitor().read_data())
+    for i in range(len(data)):
+        data[i] = str(data[i])
+
+    today = data[0].split(" ")[0]
+    filepath = os.path.join(DATA_DIR, today) + ".csv"
+
+    # round datetime down
+    data[0] = to_str(round_to_5min(to_datetime(data[0])))
+
+    # TODO do not write if datetime already exists in file
+
+    # write csv header if it does not exist
+    if not os.path.isfile(filepath) or os.path.getsize(filepath) == 0:
+        with open(filepath, "w") as f:
+            write_header(f)
+
+    # write data
+    with open(filepath, "a") as f:
+        csv_writer = csv.writer(f, delimiter=",")
+        csv_writer.writerow(data)
