@@ -101,11 +101,12 @@ def date_range(starting_day: date, num_days: int) -> List[date]:
     return date_list
 
 
-def read_csv(dte: date, existing_data={}) -> Dict[str, int]:
+def read_csv(dte: date, existing_data: Dict = None) -> Dict[str, int]:
     """
     Takes a date and returns data from that date. Data is appended to
     existing_data.
     """
+    existing_data = existing_data or {}
     date_str = dte.strftime("%Y-%m-%d")
     full_path = os.path.join(DATA_DIR, date_str+".csv")
 
