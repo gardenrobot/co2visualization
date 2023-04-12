@@ -1,6 +1,6 @@
 from celery import Celery, Task
 from flaskapp import celery
-from common import DATA_DIR, to_str, to_datetime, round_to_5min
+from common import DATA_DIR, datetime_to_str, str_to_datetime, round_to_5min
 
 import co2meter
 
@@ -26,7 +26,7 @@ def sensorread() -> None:
     filepath = os.path.join(DATA_DIR, today) + ".csv"
 
     # round datetime down
-    data[0] = to_str(round_to_5min(to_datetime(data[0])))
+    data[0] = datetime_to_str(round_to_5min(str_to_datetime(data[0])))
 
     # TODO do not write if datetime already exists in file
 

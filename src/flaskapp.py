@@ -7,7 +7,7 @@ from flask import Flask, render_template
 from flask_celeryext import FlaskCeleryExt
 from typing import Dict, List
 
-from common import to_str, date_to_str, DATA_DIR
+from common import date_to_str, DATA_DIR
 
 
 CHART_TEMPLATE = "chart.template"

@@ -2,7 +2,7 @@ import argparse
 import csv
 import os
 
-from common import to_datetime, to_str, round_to_5min, write_header
+from common import str_to_datetime, datetime_to_str, round_to_5min, write_header
 
 
 def main():
@@ -42,15 +42,15 @@ def transform(input: str, output: str, reduce_granularity: bool) -> None:
                 for count, row in enumerate(reader):
                     if count == 0:
                         continue
-                    parsed_datetime = to_datetime(f"{year}-{month}-{day} {row[0]}")
+                    parsed_datetime = str_to_datetime(f"{year}-{month}-{day} {row[0]}")
 
                     # Reduce granularity. Round down to the nearest 5 minutes.
                     # Skip this row if there is already a datapoint for that time.
                     rounded_datetime = round_to_5min(parsed_datetime)
-                    if to_str(rounded_datetime) in [d[0] for d in data]:
+                    if datetime_to_str(rounded_datetime) in [d[0] for d in data]:
                         continue
                     
-                    data.append((to_str(rounded_datetime), row[1], row[2]))
+                    data.append((datetime_to_str(rounded_datetime), row[1], row[2]))
 
             # write new file
             new_filename = f"{year}-{month}-{day}.csv"
