@@ -49,7 +49,7 @@ def overlap():
     data = [{
         "name": "baseline",
         "data": create_baseline(),
-        "color": "#ffffff",
+        "color": "#ffffff00",
     }]
 
     all_days = date_range(datetime.today(), 7)
@@ -62,6 +62,7 @@ def overlap():
         data.append({
             "name": date_to_str(day),
             "data": daily_data,
+            "color": "#00000040",
         })
 
     chart = LineChart(data, xtitle="Time", ytitle="CO2 in ppm")
