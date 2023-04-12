@@ -36,7 +36,11 @@ def test():
 def linechart():
     data = read_csv(datetime.now())
     chart = LineChart(data, xtitle="Time", ytitle="CO2 in ppm")
-    return render_template(CHART_TEMPLATE, chart=chart)
+    return render_template(
+        CHART_TEMPLATE,
+        chart=chart,
+        current_co2=get_current_co2(),
+    )
 
 
 @app.route("/7dayoverlap")
@@ -61,7 +65,11 @@ def overlap():
         })
 
     chart = LineChart(data, xtitle="Time", ytitle="CO2 in ppm")
-    return render_template(CHART_TEMPLATE, chart=chart)
+    return render_template(
+        CHART_TEMPLATE,
+        chart=chart,
+        current_co2=get_current_co2(),
+    )
 
 
 def create_baseline() -> Dict[str, int]:
@@ -105,9 +113,18 @@ def read_csv(dte: date, existing_data={}) -> Dict[str, int]:
         return {}
 
     with open(full_path) as csvfile:
-        reader = csv.reader(csvfile, delimiter=",")
+        reader = csv.reader(csvfile, delimiter=",") #TODO remove this delimiter everywhere
         for counter, row in enumerate(reader):
             if counter == 0:
                 continue
             existing_data[row[0]] = int(row[1])
     return existing_data
+
+
+def get_current_co2() -> int: # TODO make this return None when value is over 20minutes old
+    today = date_to_str(date.today())
+    today_path = os.path.join(DATA_DIR, today+".csv")
+    with open(today_path) as csvfile:
+        lastline = csvfile.readlines()[-1]
+        current_co2 = lastline.split(",")[1]
+    return current_co2

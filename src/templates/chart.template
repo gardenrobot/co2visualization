@@ -1,4 +1,10 @@
 <script src="{{ url_for('chartkick.static', filename='Chart.bundle.js') }}"></script>
 <script src="{{ url_for('chartkick.static', filename='chartkick.js') }}"></script>
 
+<h1>
+<center>
+{{ current_co2 }}ppm
+</center>
+</h1>
+
 {{ chart }}
