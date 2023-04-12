@@ -1,6 +1,6 @@
 from celery import Celery, Task
 from flaskapp import celery
-from common import DATA_DIR, datetime_to_str, str_to_datetime, round_to_5min
+from common import DATA_DIR, datetime_to_str, str_to_datetime, round_to_5min, write_header
 
 import co2meter
 
