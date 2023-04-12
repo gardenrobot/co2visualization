@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 
 from typing import TextIO
 
@@ -6,8 +6,12 @@ from typing import TextIO
 DATA_DIR = "../data/"
 
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+DATE_FORMAT = "%Y-%m-%d"
 
+def date_to_str(dte: date) -> str:
+    return dte.strftime(DATE_FORMAT)
 
+# TODO change names of converter functions
 def to_str(dt: datetime) -> str:
     return dt.strftime(DATETIME_FORMAT)
 
