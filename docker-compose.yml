@@ -8,12 +8,8 @@ services:
     ports:
       - 5001:5000
     command: ./start_flask.py
-    devices: # TODO remove this?
-      - /dev/bus/usb/005/005
     volumes:
       - ./data:/app/data:ro
-    environment:
-      REDIS_URL: ""
 
   celery:
     build:
