@@ -18,7 +18,7 @@ app.config.update(dict(
     CELERY_RESULT_BACKEND="cache",
     CELERY_CACHE_BACKEND="memory",
     CELERY_EAGER_PROPAGATES=True),
-    CELERY_BROKER_URL="redis://localhost",
+    CELERY_BROKER_URL="redis://redis:6379", # TODO read these from config file / docker-compose
 )
 app.register_blueprint(chartkick_blueprint, template_folder='templates/')
 ext = FlaskCeleryExt()

@@ -1,0 +1,7 @@
+venv
+**/__pycache__
+data
+Dockerfile
+.git
+docker-compose.yml
+**/celerybeat-*
