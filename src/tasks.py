@@ -18,7 +18,11 @@ def sensorread() -> None:
         os.mkdir(DATA_DIR)
 
     # Get data
-    data = list(co2meter.CO2monitor().read_data())
+    # TODO improve error messaging here
+    try:
+        data = list(co2meter.CO2monitor().read_data())
+    except e:
+        print(e)
     for i in range(len(data)):
         data[i] = str(data[i])
 
