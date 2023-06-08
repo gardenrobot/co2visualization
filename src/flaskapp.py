@@ -9,6 +9,8 @@ from typing import Dict, List
 
 from common import date_to_str, DATA_DIR
 
+from celery.schedules import crontab
+
 
 CHART_TEMPLATE = "chart.template"
 
@@ -24,6 +26,14 @@ app.register_blueprint(chartkick_blueprint, template_folder='templates/')
 ext = FlaskCeleryExt()
 ext.init_app(app)
 celery = ext.celery
+
+
+celery.conf.beat_schedule = {
+        'sensorread': {
+            'task': 'tasks.sensorread',
+            'schedule': crontab(minute="*/5"),
+        },
+    }
 
 
 @app.route("/test")
