@@ -17,12 +17,13 @@ services:
     restart: unless-stopped
     command: ./start_celery.py
     devices:
-      - /dev/bus/usb/005/005
+      - /dev/bus/usb/005/004
     volumes:
       - ./data:/app/data
 
   redis:
-    image: redis:6-alpine # TODO upgrade this?
+    image: redis:7-alpine
+    restart: unless-stopped
     volumes:
       - redis-data:/data
 
