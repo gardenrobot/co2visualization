@@ -1,4 +1,9 @@
-venv
 data
-__pycache__
 celerybeat-schedule
+
+# Python
+venv
+__pycache__
+
+# Vi
+.*.swp

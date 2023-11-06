@@ -5,9 +5,9 @@ from chartkick.flask import chartkick_blueprint, PieChart, LineChart
 from datetime import datetime, date, timedelta
 from flask import Flask, render_template
 from flask_celeryext import FlaskCeleryExt
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
-from common import date_to_str, DATA_DIR
+from common import date_to_str, DATA_DIR, str_to_datetime
 
 from celery.schedules import crontab
 
@@ -46,10 +46,12 @@ def test():
 def linechart():
     data = read_csv(datetime.now())
     chart = LineChart(data, xtitle="Time", ytitle="CO2 in ppm")
+    current_co2, current_co2_age = get_current_co2()
     return render_template(
         CHART_TEMPLATE,
         chart=chart,
-        current_co2=get_current_co2(),
+        current_co2=current_co2,
+        current_co2_age=current_co2_age,
     )
 
 
@@ -76,10 +78,12 @@ def overlap():
         })
 
     chart = LineChart(data, xtitle="Time", ytitle="CO2 in ppm")
+    current_co2, current_co2_age = get_current_co2()
     return render_template(
         CHART_TEMPLATE,
         chart=chart,
-        current_co2=get_current_co2(),
+        current_co2=current_co2,
+        current_co2_age=current_co2_age,
     )
 
 
@@ -133,10 +137,24 @@ def read_csv(dte: date, existing_data: Dict = None) -> Dict[str, int]:
     return existing_data
 
 
-def get_current_co2() -> int: # TODO make this return None when value is over 20minutes old
+def get_current_co2() -> Tuple[int, int]:
+    """Return the current co2 and its age in number of minutes"""
+
+    # read most recent file
     today = date_to_str(date.today())
     today_path = os.path.join(DATA_DIR, today+".csv")
     with open(today_path) as csvfile:
-        lastline = csvfile.readlines()[-1]
-        current_co2 = lastline.split(",")[1]
-    return current_co2
+        lastline = csvfile.readlines()[-1].split(",")
+        timestamp_str, current_co2 = lastline[0], int(lastline[1])
+
+    # convert time of last reading to minutes
+    timestamp = str_to_datetime(timestamp_str)
+    now = datetime.now()
+    diff = now - timestamp
+    age = int(diff.total_seconds() / 60)
+
+    # if time is over 30min, null the co2. it is too outdated.
+    if age > 30:
+        current_co2 = None
+
+    return [current_co2, age]

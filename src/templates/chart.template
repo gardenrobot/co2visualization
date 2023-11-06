@@ -3,7 +3,7 @@
 
 <h1>
 <center>
-{{ current_co2 }}ppm
+{{ current_co2 if current_co2 is not none else '???' }}ppm ({{ current_co2_age }} min ago)
 </center>
 </h1>
 
