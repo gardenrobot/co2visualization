@@ -32,8 +32,6 @@ def sensorread() -> None:
     # round datetime down
     data[0] = datetime_to_str(round_to_5min(str_to_datetime(data[0])))
 
-    # TODO do not write if datetime already exists in file
-
     # write csv header if it does not exist
     if not os.path.isfile(filepath) or os.path.getsize(filepath) == 0:
         with open(filepath, "w") as f:

@@ -17,7 +17,7 @@ services:
     restart: unless-stopped
     command: ./start_celery.py
     devices:
-      - /dev/bus/usb/005/004
+      - /dev/bus/usb/005/027
     volumes:
       - ./data:/app/data
 
