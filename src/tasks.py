@@ -40,5 +40,5 @@ def sensorread() -> None:
 
     # write data
     with open(filepath, "a") as f:
-        csv_writer = csv.writer(f, delimiter=",")
+        csv_writer = csv.writer(f)
         csv_writer.writerow(data)

@@ -129,7 +129,7 @@ def read_csv(dte: date, existing_data: Dict = None) -> Dict[str, int]:
         return {}
 
     with open(full_path) as csvfile:
-        reader = csv.reader(csvfile, delimiter=",") #TODO remove this delimiter everywhere
+        reader = csv.reader(csvfile)
         for counter, row in enumerate(reader):
             if counter == 0:
                 continue

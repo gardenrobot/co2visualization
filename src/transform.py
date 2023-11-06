@@ -38,7 +38,7 @@ def transform(input: str, output: str, reduce_granularity: bool) -> None:
             # read zg file and do some transforming
             data = []
             with open(full_path, "r") as f:
-                reader = csv.reader(f, delimiter=",")
+                reader = csv.reader(f)
                 for count, row in enumerate(reader):
                     if count == 0:
                         continue
@@ -57,7 +57,7 @@ def transform(input: str, output: str, reduce_granularity: bool) -> None:
             new_full_path = os.path.join(output, new_filename)
             with open(new_full_path, "w") as f:
                 write_header(f)
-                csv_writer = csv.writer(f, delimiter=",")
+                csv_writer = csv.writer(f)
                 for row in data:
                     csv_writer.writerow(row)
                 
