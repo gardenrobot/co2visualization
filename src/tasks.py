@@ -23,6 +23,7 @@ def sensorread() -> None:
         data = list(co2meter.CO2monitor().read_data())
     except Exception as e:
         print(e)
+        return
     for i in range(len(data)):
         data[i] = str(data[i])
 
