@@ -10,6 +10,8 @@ services:
     command: ./start_flask.py
     volumes:
       - ./data:/app/data:ro
+    environment:
+      - "TZ=America/New_York"
 
   celery:
     build:
@@ -20,6 +22,8 @@ services:
       - /dev/bus/usb/005/020
     volumes:
       - ./data:/app/data
+    environment:
+      - "TZ=America/New_York"
 
   redis:
     image: redis:7-alpine
