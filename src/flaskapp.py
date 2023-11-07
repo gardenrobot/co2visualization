@@ -1,5 +1,6 @@
 import os
 import csv
+import toml
 
 from chartkick.flask import chartkick_blueprint, PieChart, LineChart
 from datetime import datetime, date, timedelta
@@ -15,13 +16,7 @@ from celery.schedules import crontab
 CHART_TEMPLATE = "chart.template"
 
 app = Flask("testapp")
-app.config.update(dict(
-    CELERY_ALWAYS_EAGER=True,
-    CELERY_RESULT_BACKEND="cache",
-    CELERY_CACHE_BACKEND="memory",
-    CELERY_EAGER_PROPAGATES=True),
-    CELERY_BROKER_URL="redis://redis:6379", # TODO read these from config file / docker-compose
-)
+app.config.from_file("../config.toml", load=toml.load)
 app.register_blueprint(chartkick_blueprint, template_folder='templates/')
 ext = FlaskCeleryExt()
 ext.init_app(app)
@@ -29,11 +24,11 @@ celery = ext.celery
 
 
 celery.conf.beat_schedule = {
-        'sensorread': {
-            'task': 'tasks.sensorread',
-            'schedule': crontab(minute="*/5"),
-        },
-    }
+    'sensorread': {
+        'task': 'tasks.sensorread',
+        'schedule': crontab(minute="*/5"),
+    },
+}
 
 
 @app.route("/test")
