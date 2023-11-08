@@ -20,5 +20,5 @@ TODO put pics of graphs and hardware here
 1. `mkdir data`
 1. Copy `config.toml.template` to `config.toml` and set options.
 1. Run `update_device.sh` to find the USB device and update the docker compose config.
- - This will need to be updated every time the machine is rebooted or the device is unplugged.
+   - This will need to be updated every time the machine is rebooted or the device is unplugged.
 1. `docker-compose up -d
