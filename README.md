@@ -2,7 +2,7 @@
 
 A tool for logging data from a co2meter.com sensor and visualizing it.
 
-Built with [co2meter](https://github.com/vfilimonov/co2meter), Flask, and Celery. Can be optionally deployed with docker compose.
+Built with [co2meter](https://github.com/vfilimonov/co2meter), Flask, Celery, and Chartkick. Can be optionally deployed with docker compose.
 
 TODO put pics of graphs and hardware here
 
